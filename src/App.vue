@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="chartId">
     <div class="container">
       <div class="Chart__list">
         <div class="Chart">
@@ -37,7 +37,7 @@ var data = {
 
 
 export default {
-  name: 'app',
+  name: 'chartId',
   data() {
       return {
         foo: 'bar',
@@ -49,8 +49,8 @@ export default {
     mounted() {
         this.$wamp.subscribe('com.test.both', function(args, kwArgs, details) {
             // component context is available
-           
-            return this.foo;
+            console.log("Current Data: " + args)
+            //return this.foo;
         }, {
             acknowledge: true // option needed for promise, automatically added
         }).then(function(s) {
