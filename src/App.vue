@@ -1,10 +1,10 @@
 <template>
-  <div id="chartId">
+  <div id="lineChart">
     <div class="container">
       <div class="Chart__list">
         <div class="Chart">
-          <h2>Linechart</h2>
-          <line-example :data="data" :options="options"></line-example>
+          <h2>TEMPERATURE & HUMIDITY</h2>
+          <chart :chart-data="data" :options="options"></chart>
         </div>
       </div>
     </div>
@@ -12,53 +12,79 @@
 </template>
 
 <script>
-import LineExample from './LineChart.js'
+import Chart from './chart.js'
+import Moment from "moment";
 
-var data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'Data One',
-        fill: false,
-        borderColor: '#FC2525',
-        backgroundColor: '#FC2525',
-        data: [40, 39, 10, 40, 39, 80, 40]
-      },{
-        label: 'Data Two',
-        fill: false,
-        borderColor: '#05CBE1',
-        backgroundColor: '#05CBE1',
-        data: [60, 55, 32, 10, 2, 12, 53]
-      }
-    ]
-  }
+var tempInfo = [];
+var humidInfo = [];
+var currenTime = [];
 
-  var options = {responsive: true, maintainAspectRatio: false}
-
+var options = { responsive: true, maintainAspectRatio: false };
 
 export default {
-  name: 'chartId',
+  name: "lineChart",
   data() {
-      return {
-        foo: 'bar',
-        data : data,
-        options: options
+    return {
+      foo: "bar",
+      data: null,
+      options: options
+    };
+  },
+  mounted() {
+    this.$wamp
+      .subscribe(
+        "com.test.both",
+        function(args, kwArgs, details) {
+          // component context is available
+          //console.log("Current args: " + args)
+          console.log("Current args: " + args[1]);
+          console.log("Current args: " + args[2]);
 
-      };
-    },
-    mounted() {
-        this.$wamp.subscribe('com.test.both', function(args, kwArgs, details) {
-            // component context is available
-            console.log("Current Data: " + args)
-            //return this.foo;
-        }, {
-            acknowledge: true // option needed for promise, automatically added
-        }).then(function(s) {
-            console.log('AutobahnJS Subscription object: ', s); 
-        });
-    },
+          var now = new Moment();
+          var time = now.format("HH:mm:ss");
+
+          tempInfo.push(args[1]);
+          humidInfo.push(args[2]);
+          currenTime.push(time);
+
+          //return this.foo;
+
+          if (tempInfo.length == 9) {
+            tempInfo.shift();
+            humidInfo.shift();
+            currenTime.shift();
+          }
+
+          this.data = {
+            labels: currenTime,
+            datasets: [
+              {
+                label: "TEMPERATURE",
+                fill: false,
+                borderColor: "#FC2525",
+                backgroundColor: "#FC2525",
+                data: tempInfo
+              },
+              {
+                label: "HUMIDITY",
+                fill: false,
+                borderColor: "#05CBE1",
+                backgroundColor: "#05CBE1",
+                data: humidInfo
+              }
+            ]
+          };
+        },
+        {
+          acknowledge: true // option needed for promise, automatically added
+        }
+      )
+      .then(function(s) {
+        console.log("AutobahnJS Subscription object: ", s);
+      });
+  },
   components: {
-    LineExample
+    Chart
   }
 }
 </script>
