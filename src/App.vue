@@ -5,7 +5,6 @@
         <div class="Chart">
           <h2>TEMPERATURE & HUMIDITY</h2>
           <chart :chart-data="data" :options="options"></chart>
-          <!-- <chart :chart-data="displayData" :options="displayOpt"></chart> -->
         </div>
       </div>
     </div>
@@ -16,25 +15,23 @@
 import Chart from './chart.js'
 import Moment from "moment";
 
-const tempInfo = [];
-const humidInfo = [];
-const currenTime = [];
+var tempInfo = [];
+var humidInfo = [];
+var currenTime = [];
 
-const options = { responsive: true, maintainAspectRatio: false };
+var options = { responsive: true, maintainAspectRatio: false };
 
 export default {
   name: "lineChart",
   data() {
     return {
-      //foo: "bar",
+     // foo: "bar",
       data: null,
-      options: options
+    options: options
+
     };
   },
   mounted() {
-
-  //  this.$store.dispatch('displayChart');
-
     this.$wamp
       .subscribe(
         "com.test.both",
@@ -46,6 +43,8 @@ export default {
 
           var now = new Moment();
           var time = now.format("HH:mm:ss");
+
+
 
           tempInfo.push(args[1]);
           humidInfo.push(args[2]);
@@ -87,22 +86,13 @@ export default {
         console.log("AutobahnJS Subscription object: ", s);
       });
   },
-
-  // computed: {
-  //   displayData() {
-  //     return this.$store.getters.disChartData
-  //   },
-  //   displayOpt() {
-  //     return this.$store.getters.disChartData
-  //   }
-  // },
   components: {
     Chart
   }
 }
 </script>
 
-<style scoped>
+<style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
