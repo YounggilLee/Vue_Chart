@@ -18,7 +18,7 @@
 
           </div>
 
-          <chart :chartData="data" :options="options"></chart>
+          <chart :chartData="data" :options="options" :width="500" :height="250"></chart>
         </div>
 
     </div>
