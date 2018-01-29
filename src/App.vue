@@ -41,7 +41,7 @@ export default {
   name: "lineChart",
   data() {
     return {
-     // foo: "bar",
+
       data: null,
       options: options,
       devNum: null,
